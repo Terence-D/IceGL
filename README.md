@@ -1,5 +1,5 @@
-Control Support System for OpenGL (working title)
-=================================================
+Integrated Control Environment for OpenGL
+=========================================
 
 This library allows the creation of a user interface in Android and OpenGL 2.0.  With this you can easily add buttons, labels, and more to an Android application.  The goal is to allow you the game developer to focus on your game, not the menu screen structure.  
 
@@ -15,4 +15,4 @@ You will need to supply a font and should probably replace the button graphics. 
 
 Code is licensed under Apache 2.0
 
-Terence Doerksen
+Terence Doerksen 2015

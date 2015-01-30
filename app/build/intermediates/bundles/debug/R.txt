@@ -1,0 +1,3 @@
+int drawable controls 0x7f020000
+int id gamelayout 0x7f040000
+int layout activity_game 0x7f030000

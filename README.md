@@ -3,7 +3,7 @@ Integrated Control Environment for OpenGL
 
 Overview
 --------
-This AAR library allows the creation of a user interface in Android and OpenGL 2.0.  With this you can easily add buttons, labels, and more to an Android application.  The goal is to allow you the game developer to focus on your game, not the menu screen structure.  
+This AAR library allows the creation of a user interface in Android and OpenGL ES 2.0.  With this you can easily add buttons, labels, and more to an Android application.  The goal is to allow you the game developer to focus on your game, not the menu screen structure.  
 
 Features
 --------

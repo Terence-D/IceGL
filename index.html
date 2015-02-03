@@ -33,66 +33,6 @@
       <section id="main_content" class="inner">
             <h3>Integrated Control Environment for OpenGL</h3>
             <a href="./apidoc/index.html">JavaDoc API Documentation</a></br>
-These instructions assume you are familar with Android Studio, git, and basic Android development.  The latest Android build tools are strongly recommended.<br/>
-<h4>Installation</h4>
-The easiest way to get up and running is to add the AAR file to your Android Studio projects 'libs' folder.  To do this:
-<ol>
-    <li>Clone the Ice GL repo using <code>git clone https://github.com/Terence-D/IceGL.git</code></li>
-    <li>There is an AAR compiled for debug already in the repo under <code>/app/build/outputs/aar</code>, although I recommend recompiling yourself</li>
-    <li>You can modify the controls.png drawable to improve the styling of buttons, but please ensure the new png file matches the format and sizing exactly.</li>
-</ol>
-<h4>Setting Up Your First Project</h4>
-<ol>
-    <li>Create a new Android Studio project, make sure you target API 15 or higher.</li>
-    <li>Choose to add a blank activity, accept other options as required</li>
-    <li>You will need to supply your own TTF Font file for text - many free ones are available online, but please check that the license matches your needs!</li>
-    <li>The AAR you built in the Installation section above can now be copied into your Android app lib folder</li>
-    <li>To have it picked up by your application, add the following to your apps build.gradle, modify the app-debug name as required.  the repositories section goes under the android header:
-        <code><pre>repositories {
-    flatDir {
-        dirs 'libs'
-    }
-}
-
-dependencies {
-    compile(name:'app-debug', ext:'aar')
-}</pre></code>
-    </li>
-    <li>You can now open up the Activity you will be using, and modify it to inherit from GLActivity.  You also need to add a line in onCreate() to change to the first GLScreen you want the user to see in your application.  An example is below:
-        <code><pre>public class MainActivity extends GLActivity
-{
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        changeScreen (new <strong>WelcomeScreen</strong>(this));
-    }
-}</pre></code></li>
-    <li>The last step is to create a new class, this time inherited from GLScreen.  A very basic example that will show text on the screen is below:
-        <code><pre>public class WelcomeScreen extends GLScreen
-{
-    public WelcomeScreen(final GLActivity activity)
-    {
-        super(activity);
-
-        Label title = new Label(this);
-        title.setBottom(11);
-        title.setLeft(0);
-        title.setWidth(ScreenConfiguration.getHorizontalTiles());
-        title.setTextJustification(Label.CENTER_JUSTIFY);
-        title.setFontSize(64);
-        title.setColor(GLColor.Blue);
-        title.setText("Hello World");
-    }
-}
-</pre></code></li>
-    <li>Congratulations, you have the beginnings of a functional GUI built with OpenGL for your new game or application!</li>
-</ol>
-<h4>Usage</h4>
-<h5>Grids</h5>
-<h5>Text Entry</h5>
-<h5>Buttons</h5>
-<h5>Events</h5>
-<h5>Changing Screens</h5>
       </section>
     </div>
 

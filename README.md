@@ -22,9 +22,9 @@ Requirements
 * Android Studio - built on Android studio 1.1 Beta 1
 * Default button graphics are supplied, but I highly recommend usingsomething.. prettier instead.
 
-Usage Guide
+Documentation
 ----------
-Documentation Site: http://terence-d.github.io/IceGL/
+Please refer to the Wiki or the API Documentation Site: http://terence-d.github.io/IceGL/
 
 License
 -------

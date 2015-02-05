@@ -123,12 +123,20 @@ public class GLTexture
     }
 
     /**
+     * Regenerate our texture for the passed in bitmap object
+     * @param bmp bitmap we will be loading in
+     */
+    public void rebuildTexture(Bitmap bmp) {
+        generateTexture(bmp);
+    }
+
+    /**
      * Generate our texture for the passed in bitmap object
      * @param bmp bitmap we will be loading in
      */
     private void generateTexture(Bitmap bmp) {
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + textureID);  // Set the active texture unit to texture unit 0
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureID); // Bind the texture to this unit
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + textureID);  // Set the active texture unit to texture unit 0
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureID); // Bind the texture to this unit
 
         // Set filtering
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);

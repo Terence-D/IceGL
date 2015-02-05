@@ -79,6 +79,7 @@ public abstract class Control implements IControl, OnTouchListener
             glInstance.generateTextures();
         }
         builtTexture = true;
+        dirty = false;
     }
 
     /**
@@ -290,7 +291,6 @@ public abstract class Control implements IControl, OnTouchListener
         if (dirty)
         {
             buildGLObjects();
-            dirty = false;
         }
         if (visible && builtTexture)
         {

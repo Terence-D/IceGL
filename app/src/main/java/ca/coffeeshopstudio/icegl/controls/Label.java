@@ -18,7 +18,6 @@ package ca.coffeeshopstudio.icegl.controls;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.opengl.GLES20;
 
 import ca.coffeeshopstudio.icegl.gl.GLColor;
 import ca.coffeeshopstudio.icegl.gl.GLText;
@@ -37,7 +36,7 @@ public class Label extends Control
 
     //Defaults
     protected final String DEFAULT_FONT = "font.ttf";
-    protected String text = "New Label";
+    protected String text = "";
     protected GLColor color = GLColor.White;
     protected final int DEFAULT_SIZE = 36;
     protected Rect dimensions = new Rect(0,0,0,0);
@@ -72,46 +71,46 @@ public class Label extends Control
     public void buildGLObjects()
     {
         //Build a texture with the font and string message we want to use
-        try
+        if (!text.isEmpty())
         {
-            Bitmap bmp = GLText.buildTextBitmap(icm.getContext(), getText(), font, fontSize, getColor(), underline);
-            //get the dimensions of the generated font texture
-            dimensions = GLText.getDimensions();
-
-            textMessageHeight = dimensions.height();
-
-            textBottom = glo[0].getBottom();
-
-            switch (getTextJustification())
+            try
             {
-                case CENTER_JUSTIFY:
-                    textLeft = glo[0].getLeft() + (getWidth() / 2) - (dimensions.width() / 2);
-                    textBottom = glo[0].getBottom() + (glo[0].getHeight() / 2) - (dimensions.height() / 2);
-                    break;
-                case LEFT_JUSTIFY:
-                    textLeft = glo[0].getLeft();//+ (glo[0].getWidth() / 2) - (dimensions.width() / 2);
-                    break;
-                case RIGHT_JUSTIFY:
-                    textLeft = glo[0].getLeft() + glo[0].getWidth() - dimensions.width();
-                    break;
-            }
+                Bitmap bmp = GLText.buildTextBitmap(icm.getContext(), getText(), font, fontSize, getColor(), underline);
+                //get the dimensions of the generated font texture
+                dimensions = GLText.getDimensions();
 
-            //Delete any existing textures before updating the text
-            if (fontTexture != null)
-                if (fontTexture.getTextureID() > 0)
+                textMessageHeight = dimensions.height();
+
+                textBottom = glo[0].getBottom();
+
+                switch (getTextJustification())
                 {
-                    GLES20.glDeleteTextures(1, new int[] {fontTexture.getTextureID()}, 0);
+                    case CENTER_JUSTIFY:
+                        textLeft = glo[0].getLeft() + (getWidth() / 2) - (dimensions.width() / 2);
+                        textBottom = glo[0].getBottom() + (glo[0].getHeight() / 2) - (dimensions.height() / 2);
+                        break;
+                    case LEFT_JUSTIFY:
+                        textLeft = glo[0].getLeft();//+ (glo[0].getWidth() / 2) - (dimensions.width() / 2);
+                        break;
+                    case RIGHT_JUSTIFY:
+                        textLeft = glo[0].getLeft() + glo[0].getWidth() - dimensions.width();
+                        break;
                 }
-            //Create the texture and build our globject based on it
-            fontTexture = new GLTexture(bmp, 0, 0, 0);
-            setGlObjectDimensions(glo[1], textLeft, textBottom, dimensions.width(), dimensions.height(), getScale());
-            glo[1].setTextureID(fontTexture.getTextureID());
-            glo[1].setTexture(0, 0);
-            glo[1].setTextureOffset(1, 1);
-            bmp.recycle(); //clean up our bitmap
-        } catch (Exception e)
-        {
-            dimensions = new Rect(0,0,0,0);
+
+                //Create the texture and build our globject based on it
+                if (fontTexture != null)
+                    fontTexture.rebuildTexture(bmp);
+                else
+                   fontTexture = new GLTexture(bmp, 0, 0, 0);
+                setGlObjectDimensions(glo[1], textLeft, textBottom, dimensions.width(), dimensions.height(), getScale());
+                glo[1].setTextureID(fontTexture.getTextureID());
+                glo[1].setTexture(0, 0);
+                glo[1].setTextureOffset(1, 1);
+                bmp.recycle(); //clean up our bitmap
+            } catch (Exception e)
+            {
+                dimensions = new Rect(0,0,0,0);
+            }
         }
         super.buildGLObjects();
     }

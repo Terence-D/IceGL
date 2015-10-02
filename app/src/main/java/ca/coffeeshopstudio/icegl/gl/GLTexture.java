@@ -29,49 +29,43 @@ import java.nio.IntBuffer;
  */
 public class GLTexture
 {
-    private float targetWidth = 0;
-
-    private float targetHeight = 0;
     private static final int MAX_TEXTURES = 1; //per atlas we allow, for future proofing maybe
-
+    private float targetWidth = 0;
+    private float targetHeight = 0;
     private IntBuffer t;
 
     private int textureID = -1;
 
     private float spriteSize = -1;
 
-    private float atlasWidth = -1;
-    private float atlasHeight = -1;
-    private float atlasUratio = -1;
-    private float atlasVratio = -1;
+    private float textureWidth = -1;
+    private float textureHeight = -1;
+    private float textureUratio = -1;
+    private float textureVratio = -1;
+
+    /**
+     * Constructor for the texture atlas we are loading - does not initialze a sprite size
+     * useful for loading complete images as apposed to a sprite map
+     * @param context active activity context
+     * @param textureAtlas file name of the atlas stored under drawable
+     * @param targetWidth width, in pixels, that the atlas was drawn in
+     * @param targetHeight height, in pixels, that the atlas was drawn in
+     */
+    public GLTexture(Context context, String textureAtlas, float targetWidth, float targetHeight) {
+        loadFromContext(context, textureAtlas, 0.0f, targetWidth, targetHeight);
+    }
 
     /**
      * Constructor for the texture atlas we are loading
      * @param context active activity context
-     * @param atlasName file name of the atlas stored under drawable
+     * @param textureAtlas file name of the atlas stored under drawable
      * @param spriteSize ideal size of each sprite
      * @param targetWidth width, in pixels, that the atlas was drawn in
      * @param targetHeight height, in pixels, that the atlas was drawn in
      */
-    public GLTexture(Context context, String atlasName, float spriteSize, float targetWidth, float targetHeight)
+    public GLTexture(Context context, String textureAtlas, float spriteSize, float targetWidth, float targetHeight)
     {
-        if (context == null)
-            throw new IllegalArgumentException("NULL Context passed in for texture atlas");
-        if (spriteSize < 0)
-            throw new IllegalArgumentException("Sprite size must be positive value");
-        if (targetHeight < 0)
-            throw new IllegalArgumentException("target height must be a positive value");
-        if (targetWidth < 0)
-            throw new IllegalArgumentException("target width must be positive value");
-
-        this.targetHeight = targetHeight;
-        this.targetWidth = targetWidth;
-        this.spriteSize = spriteSize;
-
-        t = IntBuffer.allocate(MAX_TEXTURES);
-        init();
-        Bitmap bmp = getBitmap(context, atlasName);
-        generateTexture(bmp);
+        loadFromContext(context, textureAtlas, spriteSize, targetWidth, targetHeight);
     }
 
     /**
@@ -82,6 +76,19 @@ public class GLTexture
      * @param targetHeight height, in pixels, that the atlas was drawn in
      */
     public GLTexture(Bitmap bmp, float spriteSize, float targetWidth, float targetHeight) {
+        loadFromBmp(bmp, spriteSize, targetWidth, targetHeight);
+    }
+
+    private void loadFromContext(Context context, String textureAtlas, float spriteSize, float targetWidth, float targetHeight) {
+        if (context == null)
+            throw new IllegalArgumentException("NULL Context passed in for texture atlas");
+        Bitmap bmp = getBitmap(context, textureAtlas);
+        generateTexture(bmp);
+
+        loadFromBmp(bmp, spriteSize, targetWidth, targetHeight);
+    }
+
+    private void loadFromBmp(Bitmap bmp, float spriteSize, float targetWidth, float targetHeight) {
         if (spriteSize < 0)
             throw new IllegalArgumentException("Sprite size must be positive value");
         if (targetHeight < 0)
@@ -93,7 +100,7 @@ public class GLTexture
         this.targetWidth = targetWidth;
         this.spriteSize = spriteSize;
         t = IntBuffer.allocate(MAX_TEXTURES);
-        init();
+        initTexture();
         generateTexture(bmp);
     }
 
@@ -115,7 +122,7 @@ public class GLTexture
     /**
      * Initialize our texture object
      */
-    private void init()
+    private void initTexture()
     {
         //add our texture and initialize the buffer
         GLES20.glGenTextures(1, t);
@@ -149,11 +156,11 @@ public class GLTexture
         // Load the bitmap into the bound texture.
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
 
-        atlasWidth = bmp.getWidth();
-        atlasHeight = bmp.getHeight();
+        textureWidth = bmp.getWidth();
+        textureHeight = bmp.getHeight();
 
-        atlasUratio = spriteSize / atlasWidth;
-        atlasVratio = spriteSize / atlasHeight;
+        textureUratio = spriteSize / textureWidth;
+        textureVratio = spriteSize / textureHeight;
 
         // We are done using the bitmap so we should recycle it.
         bmp.recycle();
@@ -172,7 +179,7 @@ public class GLTexture
      * @return ratio of the sprites width
      */
     public float getUratio() {
-        return atlasUratio;
+        return textureUratio;
     }
 
     /**
@@ -180,7 +187,7 @@ public class GLTexture
      * @return ratio of the sprites height
      */
     public float getVratio() {
-        return atlasVratio;
+        return textureVratio;
     }
 
     /**
@@ -199,5 +206,23 @@ public class GLTexture
     public float getTargetWidth()
     {
         return targetWidth;
+    }
+
+    /**
+     * Returns how wide our grid is measured in sprites
+     *
+     * @return how many grid units across our texture is
+     */
+    public float getGridWith() {
+        return targetWidth / spriteSize;
+    }
+
+    /**
+     * Returns how tall our grid is measured in sprites
+     *
+     * @return how many grid units vertically our texture is
+     */
+    public float getGridHeight() {
+        return targetHeight / spriteSize;
     }
 }

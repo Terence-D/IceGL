@@ -23,33 +23,26 @@ import ca.coffeeshopstudio.icegl.gl.ScreenConfiguration;
 
 public abstract class Control implements IControl, OnTouchListener
 {
+    /**
+     * Callback Function to allow custom event handling when touched
+     */
+    public OnTouchListener onTouchListener = null;
     protected GLObject[] glo;
-
     protected boolean enabled = true;
     protected boolean visible = true;
-
     //stores where in the grid we are positioning ourselves.  -1 indicates not used
     private int gridLeft = -1;
     private int gridBottom = -1;
     private int gridWidth = -1;
     private int gridHeight = -1;
-
     private boolean builtTexture = false; //determines if there is something to draw or not
-
     private float width;
     private float height;
     private float left;
     private float bottom;
     private float scale;
-
     private int gloCount = 1; //by default we only have 1 item to draw.  some objects such as Label may override this.
-
     private boolean dirty = false; //if true, will rebuild the GLObjects
-
-    /**
-     * Callback Function to allow custom event handling when touched
-     */
-    public OnTouchListener onTouchListener = null;
 
     /**
      * Default constructor
@@ -110,7 +103,7 @@ public abstract class Control implements IControl, OnTouchListener
             this.gloCount = gloCount;
         glo = new GLObject[gloCount];
         for (int i=0; i < gloCount; i++)
-                glo[i] = new GLObject();
+            glo[i] = new GLObject();
     }
 
     /**
@@ -124,6 +117,17 @@ public abstract class Control implements IControl, OnTouchListener
     }
 
     /**
+     * Set the Left position of the Control based on Grid units
+     * @param left left position based on Grid units
+     */
+    @Override
+    public void setLeft(int left)
+    {
+        gridLeft = left;
+        setLeftRaw(gridLeft * ScreenConfiguration.getTileWidth());
+    }
+
+    /**
      * Get the precise location of the controls bottom most position
      * @return the exact bottom most position of the control
      */
@@ -131,6 +135,17 @@ public abstract class Control implements IControl, OnTouchListener
     public float getBottom()
     {
         return bottom;
+    }
+
+    /**
+     * Set the bottom position of the Control based on Grid units
+     * @param bottom bottom position based on Grid units
+     */
+    @Override
+    public void setBottom(int bottom)
+    {
+        gridBottom = bottom;
+        setBottomRaw(gridBottom * ScreenConfiguration.getTileHeight());
     }
 
     /**
@@ -144,6 +159,18 @@ public abstract class Control implements IControl, OnTouchListener
     }
 
     /**
+     * Set the Width of the Controls based on Grid units
+     * @param width how wide of the control based in Grid units
+     */
+    @Override
+    public void setWidth(int width)
+    {
+        if (width < 0) width = 0;
+        gridWidth = width;
+        setWidthRaw(gridWidth * ScreenConfiguration.getTileWidth());
+    }
+
+    /**
      * Get the precise height of the control
      * @return height of the control
      */
@@ -151,6 +178,18 @@ public abstract class Control implements IControl, OnTouchListener
     public float getHeight()
     {
         return height;
+    }
+
+    /**
+     * Set the height of the Controls based on Grid units
+     * @param height how high of the control based in Grid units
+     */
+    @Override
+    public void setHeight(int height)
+    {
+        if (height < 0) height = 0;
+        gridHeight = height;
+        setHeightRaw(gridHeight * ScreenConfiguration.getTileHeight());
     }
 
     /**
@@ -174,52 +213,6 @@ public abstract class Control implements IControl, OnTouchListener
     }
 
     /**
-     * Set the height of the Controls based on Grid units
-     * @param height how high of the control based in Grid units
-     */
-    @Override
-    public void setHeight(int height)
-    {
-        if (height < 0) height = 0;
-        gridHeight = height;
-        setHeightRaw(gridHeight * ScreenConfiguration.getTileHeight());
-    }
-
-    /**
-     * Set the Width of the Controls based on Grid units
-     * @param width how wide of the control based in Grid units
-     */
-    @Override
-    public void setWidth(int width)
-    {
-        if (width < 0) width = 0;
-        gridWidth = width;
-        setWidthRaw(gridWidth * ScreenConfiguration.getTileWidth());
-    }
-
-    /**
-     * Set the Left position of the Control based on Grid units
-     * @param left left position based on Grid units
-     */
-    @Override
-    public void setLeft(int left)
-    {
-        gridLeft = left;
-        setLeftRaw(gridLeft * ScreenConfiguration.getTileWidth());
-    }
-
-    /**
-     * Set the bottom position of the Control based on Grid units
-     * @param bottom bottom position based on Grid units
-     */
-    @Override
-    public void setBottom(int bottom)
-    {
-        gridBottom = bottom;
-        setBottomRaw(gridBottom * ScreenConfiguration.getTileHeight());
-    }
-
-    /**
      * Set the Exact Left position of the Control
      * @param left exact left position
      */
@@ -240,22 +233,12 @@ public abstract class Control implements IControl, OnTouchListener
     }
 
     /**
-     * Adjust the scale of the control
-     * @param scale What to multiply the scale by
-     */
-    @Override
-    public void setScale(float scale)
-    {
-        this.scale = scale;
-    }
-
-    /**
      * Assign our control the specified texture
+     *
      * @param textureID index of the texture to use
      */
     @Override
-    public void setTextureID(int textureID)
-    {
+    public void setTextureID(int textureID) {
         glo[0].setTextureID(textureID);
     }
 
@@ -265,8 +248,7 @@ public abstract class Control implements IControl, OnTouchListener
      * @param y vertical position inside the texture to start drawing from
      */
     @Override
-    public void setTexturePosition(float x, float y)
-    {
+    public void setTexturePosition(float x, float y) {
         glo[0].setTexture(x, y);
     }
 
@@ -276,8 +258,7 @@ public abstract class Control implements IControl, OnTouchListener
      * @param v Vertical offset
      */
     @Override
-    public void setTextureOffset(float u, float v)
-    {
+    public void setTextureOffset(float u, float v) {
         glo[0].setTextureOffset(u, v);
     }
 
@@ -286,14 +267,11 @@ public abstract class Control implements IControl, OnTouchListener
      * @param mtrxProjView Our generated Projection/View matrix
      */
     @Override
-    public void onDraw(float[] mtrxProjView)
-    {
-        if (dirty)
-        {
+    public void onDraw(float[] mtrxProjView) {
+        if (dirty) {
             buildGLObjects();
         }
-        if (visible && builtTexture)
-        {
+        if (visible && builtTexture) {
             for (GLObject glInstance : glo)
                 glInstance.onDraw(mtrxProjView);
         }
@@ -303,13 +281,11 @@ public abstract class Control implements IControl, OnTouchListener
      * When we change the size of our surface, readjust the size of the control based on the grid
      */
     @Override
-    public void onSurfaceChanged()
-    {
+    public void onSurfaceChanged() {
         if (gridBottom >= 0 &&
                 gridLeft >= 0 &&
                 gridWidth >= 0 &&
-                gridHeight >= 0)
-        {
+                gridHeight >= 0) {
             setWidth(gridWidth);
             setHeight(gridHeight);
             setLeft(gridLeft);
@@ -317,7 +293,6 @@ public abstract class Control implements IControl, OnTouchListener
         }
         buildGLObjects();
     }
-
 
     /**
      * Called when the GL Surface is first created
@@ -334,8 +309,7 @@ public abstract class Control implements IControl, OnTouchListener
      * @param newBottom new bottom most position based on our grid
      */
     @Override
-    public void move(float newLeft, float newBottom)
-    {
+    public void move(float newLeft, float newBottom) {
         setLeftRaw(newLeft * ScreenConfiguration.getTileWidth());
         setBottomRaw(newBottom * ScreenConfiguration.getTileHeight());
         buildGLObjects();
@@ -347,8 +321,7 @@ public abstract class Control implements IControl, OnTouchListener
      * @param newBottom new bottom most position
      */
     @Override
-    public void moveRaw(float newLeft, float newBottom)
-    {
+    public void moveRaw(float newLeft, float newBottom) {
         setLeftRaw(newLeft);
         setBottomRaw(newBottom);
         buildGLObjects();
@@ -360,23 +333,11 @@ public abstract class Control implements IControl, OnTouchListener
      * @return false if disabled, or the value returned from our callback listener
      */
     @Override
-    public boolean onTouch(MotionEvent event)
-    {
-        if (enabled && visible && onTouchListener != null)
-        {
+    public boolean onTouch(MotionEvent event) {
+        if (enabled && visible && onTouchListener != null) {
             return onTouchListener.onTouch(event);
         }
         return false;
-    }
-
-    /**
-     * Set the enabled status of our control
-     * @param enabled true to enable the control, false to disable
-     */
-    @Override
-    public void setEnabled(boolean enabled)
-    {
-        this.enabled = enabled;
     }
 
     /**
@@ -384,8 +345,7 @@ public abstract class Control implements IControl, OnTouchListener
      * @param visible true to display the control, false to hie
      */
     @Override
-    public void setVisibility(boolean visible)
-    {
+    public void setVisibility(boolean visible) {
         this.visible = visible;
     }
 
@@ -394,9 +354,17 @@ public abstract class Control implements IControl, OnTouchListener
      * @return enabled status
      */
     @Override
-    public boolean isEnabled()
-    {
+    public boolean isEnabled() {
         return enabled;
+    }
+
+    /**
+     * Set the enabled status of our control
+     * @param enabled true to enable the control, false to disable
+     */
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**
@@ -404,8 +372,7 @@ public abstract class Control implements IControl, OnTouchListener
      * @return whether or not the control is shown
      */
     @Override
-    public boolean isVisible()
-    {
+    public boolean isVisible() {
         return visible;
     }
 
@@ -413,9 +380,17 @@ public abstract class Control implements IControl, OnTouchListener
      * What scale we are using for drawing the control
      * @return scale of the control
      */
-    public float getScale()
-    {
+    public float getScale() {
         return scale;
+    }
+
+    /**
+     * Adjust the scale of the control
+     * @param scale What to multiply the scale by
+     */
+    @Override
+    public void setScale(float scale) {
+        this.scale = scale;
     }
 
     /**

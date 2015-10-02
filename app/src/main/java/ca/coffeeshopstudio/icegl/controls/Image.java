@@ -16,8 +16,16 @@
 
 package ca.coffeeshopstudio.icegl.controls;
 
+import ca.coffeeshopstudio.icegl.gl.GLTexture;
+
 public class Image extends Control
 {
+    //The attached control manager
+    protected IControlManager icm;
+    private String imageName;
+    private float width = 0.0f;
+    private float height = 0.0f;
+
     /**
      * Default constructor
      * @param icm parent to attach to
@@ -25,5 +33,34 @@ public class Image extends Control
     public Image(IControlManager icm)
     {
         super(icm);
+        this.icm = icm;
+        icm.addControl(this);
+        //defaults to full size sprite
+        setTexturePosition(0, 0);
+        setTextureOffset(1f, 1f);
+        enabled = false; //prevents overriding clicks
+    }
+
+    /**
+     * Assigns the Image field and core information to display on the screen
+     *
+     * @param imageName image to draw that is stored in the drawable resource folder
+     * @param width     width of the image we will be drawing
+     * @param height    height of the image we will be drawing
+     */
+    public void setImage(String imageName, float width, float height) {
+        this.imageName = imageName;
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    public void onSurfaceCreated() {
+        if (imageName != null) {
+            GLTexture texBackdrop = new GLTexture(icm.getActivity(), imageName, width, width, height);
+
+            setTextureID(texBackdrop.getTextureID());
+        }
+        super.onSurfaceCreated();
     }
 }

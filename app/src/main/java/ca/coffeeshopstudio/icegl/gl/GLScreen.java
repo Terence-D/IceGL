@@ -30,6 +30,7 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import ca.coffeeshopstudio.icegl.controls.Dialog;
 import ca.coffeeshopstudio.icegl.controls.IControl;
 import ca.coffeeshopstudio.icegl.controls.IControlManager;
 
@@ -38,20 +39,17 @@ import ca.coffeeshopstudio.icegl.controls.IControlManager;
  */
 public abstract class GLScreen implements GLSurfaceView.Renderer, IControlManager
 {
-    private float controlSpriteSize = 32.0f; //size of each tile in the default controls texture atlas
-
+    protected final float[] mtrxProjectionAndView = new float[16];
     // Our matrices
     private final float[] mtrxProjection = new float[16];
     private final float[] mtrxView = new float[16];
-    protected final float[] mtrxProjectionAndView = new float[16];
-
-    // Our screen resolution
-    private float screenWidth;
-    private float screenHeight;
-
     // Misc
     protected Context context;
     protected GLActivity activity;
+    private float controlSpriteSize = 32.0f; //size of each tile in the default controls texture atlas
+    // Our screen resolution
+    private float screenWidth;
+    private float screenHeight;
     private long mLastTime; //timer for checking performance
 
     //scaling
@@ -60,7 +58,7 @@ public abstract class GLScreen implements GLSurfaceView.Renderer, IControlManage
     private GLTexture controlTexture; //used strictly for the controls
 
     //active controls assigned from the current screen
-    private List<IControl> controls = new ArrayList<IControl>();
+    private List<IControl> controls = new ArrayList<>();
 
     //move the view port to adjust the viewable part of the screen by this much
     private PointF screenAdjustment = new PointF(0, 0);
@@ -239,6 +237,13 @@ public abstract class GLScreen implements GLSurfaceView.Renderer, IControlManage
     {
         float posX = event.getX();
         float posY = screenHeight - event.getY();
+
+        for (IControl control : controls) {
+            if (control instanceof Dialog && control.isEnabled()) {
+                ((Dialog) control).onTouch(event, posX, posY);
+                return true;
+            }
+        }
 
         for (IControl control : controls)
         {
